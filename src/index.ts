@@ -5,6 +5,9 @@ import subjectRouter from './routes/subjects';
 import cors from 'cors';
 dotenv.config();
 const app = express();
+
+if (!process.env.FRONTEND_ORIGIN) throw new Error('FRONTEND_ORIGIN isn`t set in .env file');
+
 app.use(
   cors({
     origin: process.env.FRONTEND_ORIGIN,

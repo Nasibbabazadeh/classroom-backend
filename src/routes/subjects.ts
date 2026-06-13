@@ -6,23 +6,31 @@ const subjectRouter = express.Router();
 
 const route = (path: string) => subjectRouter.route(path);
 
+const likeContains = (value: unknown) => `%${String(value).replace(/[%_\\]/g, '\\$&')}%`;
+
 route('/').get(async (req, res) => {
   try {
-    const { search, department, page = 1, limit = 10 } = req.query; // req : https://development/api/v1/subjects?search=Salam&department=GAN&page=3&limit=30
-    const currentPage = Math.max(1, +page);
-    const limitPerPage = Math.max(1, +limit);
+    const { search, department, page = '1', limit = '10' } = req.query;
+    const parsedPage = Number.parseInt(String(page), 10);
+    const parsedLimit = Number.parseInt(String(limit), 10);
+    if (!Number.isFinite(parsedPage) || !Number.isFinite(parsedLimit)) {
+      return res.status(400).send({ error: 'page and limit must be integers' });
+    }
+    const MAX_LIMIT = 100;
+    const currentPage = Math.max(1, parsedPage);
+    const limitPerPage = Math.min(MAX_LIMIT, Math.max(1, parsedLimit));
     const offset = (currentPage - 1) * limitPerPage;
 
     const filterConditions = [];
 
     if (search) {
       filterConditions.push(
-        or(ilike(subjects.name, `%${search}%`), ilike(subjects.code, `%${search}%`)), // or(...) means match if the term appears in the NAME or the CODE
+        or(ilike(subjects.name, likeContains(search)), ilike(subjects.code, likeContains(search))), // or(...) means match if the term appears in the NAME or the CODE
       );
     }
 
     if (department) {
-      filterConditions.push(ilike(departments.name, `%${department}%`)); // ilike => case-insensitive; like => case-sensitive
+      filterConditions.push(ilike(departments.name, likeContains(department))); // ilike => case-insensitive; like => case-sensitive
     }
 
     const whereClause = filterConditions.length > 0 ? and(...filterConditions) : undefined; // WHERE Department = 'Sales' AND Subject = 'TEST';
