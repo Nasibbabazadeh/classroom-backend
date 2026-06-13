@@ -28,9 +28,7 @@ describe('src/db/index.ts', () => {
     it('throws an error on import', async () => {
       delete process.env['DATABASE_URL'];
 
-      await expect(import('../db/index.js')).rejects.toThrow(
-        'DATABASE_URL is not defined'
-      );
+      await expect(import('../db/index.js')).rejects.toThrow('DATABASE_URL is not defined');
     });
 
     it('throws an Error instance (not a string or other type)', async () => {
@@ -57,9 +55,7 @@ describe('src/db/index.ts', () => {
       process.env['DATABASE_URL'] = '';
 
       // The check is `!process.env.DATABASE_URL` which is falsy for empty string
-      await expect(import('../db/index.js')).rejects.toThrow(
-        'DATABASE_URL is not defined'
-      );
+      await expect(import('../db/index.js')).rejects.toThrow('DATABASE_URL is not defined');
     });
   });
 
