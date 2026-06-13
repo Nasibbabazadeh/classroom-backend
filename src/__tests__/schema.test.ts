@@ -186,9 +186,10 @@ describe('demoUsers schema', () => {
   describe('column count and completeness', () => {
     it('has exactly 4 columns defined', () => {
       const columns = Object.keys(demoUsers).filter(
-        (k) => typeof demoUsers[k as keyof typeof demoUsers] === 'object' &&
-               demoUsers[k as keyof typeof demoUsers] !== null &&
-               'columnType' in (demoUsers[k as keyof typeof demoUsers] as object)
+        (k) =>
+          typeof demoUsers[k as keyof typeof demoUsers] === 'object' &&
+          demoUsers[k as keyof typeof demoUsers] !== null &&
+          'columnType' in (demoUsers[k as keyof typeof demoUsers] as object),
       );
       expect(columns.length).toBe(4);
     });
